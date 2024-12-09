@@ -12,6 +12,7 @@ for l in open("day09_input.txt").read():
 
     file = not file
 
+first_free_space = 0
 backward_ptr = len(disk) - 1
 
 while backward_ptr > 0:
@@ -23,10 +24,14 @@ while backward_ptr > 0:
     while disk[backward_ptr - file_size] == file_id:
         file_size += 1
 
-    forward_ptr = 0
+    forward_ptr = first_free_space
+    first_free = True
     while forward_ptr < backward_ptr:
         free_size = 0
         while disk[forward_ptr + free_size] == ".":
+            if first_free:
+                first_free = False
+                first_free_space = forward_ptr
             free_size += 1
 
         if free_size >= file_size:
