@@ -25,15 +25,15 @@ class Region:
         for point in self.plots:
             for corner in corners:
                 direction = corner[0]
-                a = (point[0] + direction[0], point[1] + direction[1]) in self.plots
+                adjacent1 = (point[0] + direction[0], point[1] + direction[1]) in self.plots
 
                 direction = corner[1]
-                b = (point[0] + direction[0], point[1] + direction[1]) in self.plots
+                diagonal = (point[0] + direction[0], point[1] + direction[1]) in self.plots
 
                 direction = corner[2]
-                c = (point[0] + direction[0], point[1] + direction[1]) in self.plots
+                adjacent2 = (point[0] + direction[0], point[1] + direction[1]) in self.plots
 
-                if (a == c) and (not a or not b):
+                if (adjacent1 == adjacent2) and (not adjacent1 or not diagonal):
                     sides += 1
         return sides
 
