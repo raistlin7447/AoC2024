@@ -42,23 +42,20 @@ class Room:
         match self.locations[new_location.x][new_location.y].type:
             case LocationType.EMPTY:
                 return True
-            case LocationType.OBJECT:
-                return self.can_move(new_location, direction)
             case LocationType.WALL:
                 return False
+            case LocationType.OBJECT:
+                return self.can_move(new_location, direction)
 
     def move_location(self, old_location, direction):
         new_location = self.get_new_location(old_location, direction)
-        match self.locations[new_location.x][new_location.y].type:
-            case LocationType.EMPTY:
-                self.locations[new_location.x][new_location.y] = new_location
-                self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
-            case LocationType.OBJECT:
+
+        if self.locations[new_location.x][new_location.y].type == LocationType.OBJECT:
                 self.move_location(self.locations[new_location.x][new_location.y], direction)
-                self.locations[new_location.x][new_location.y] = new_location
-                self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
-            case LocationType.WALL:
-                raise Exception("Hit Wall")
+
+        self.locations[new_location.x][new_location.y] = new_location
+        self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
+
         return new_location
 
     def get_new_location(self, location, direction):

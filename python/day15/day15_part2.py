@@ -55,43 +55,34 @@ class Room:
         match self.locations[new_location.x][new_location.y].type, direction:
             case LocationType.EMPTY, _:
                 return True
+            case LocationType.WALL, _:
+                return False
+            case LocationType.LEFT_BOX | LocationType.RIGHT_BOX, "<" | ">":
+                return self.can_move(new_location, direction)
             case LocationType.LEFT_BOX, "^" | "v":
                 right_box = self.locations[new_location.x][new_location.y + 1]
                 return self.can_move(new_location, direction) and self.can_move(right_box, direction)
             case LocationType.RIGHT_BOX, "^" | "v":
                 left_box = self.locations[new_location.x][new_location.y - 1]
                 return self.can_move(new_location, direction) and self.can_move(left_box, direction)
-            case LocationType.LEFT_BOX | LocationType.RIGHT_BOX, "<" | ">":
-                return self.can_move(new_location, direction)
-            case LocationType.WALL, _:
-                return False
 
     def move_location(self, old_location, direction):
         new_location = self.get_new_location(old_location, direction)
         match self.locations[new_location.x][new_location.y].type, direction:
-            case LocationType.EMPTY, _:
-                self.locations[new_location.x][new_location.y] = new_location
-                self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
-            case LocationType.LEFT_BOX, "^" | "v":
-                self.move_location(self.locations[new_location.x][new_location.y], direction)
-                self.locations[new_location.x][new_location.y] = new_location
-                self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
-
-                # Right Box
-                self.move_location(self.locations[new_location.x][new_location.y + 1], direction)
-            case LocationType.RIGHT_BOX, "^" | "v":
-                self.move_location(self.locations[new_location.x][new_location.y], direction)
-                self.locations[new_location.x][new_location.y] = new_location
-                self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
-
-                # Left Box
-                self.move_location(self.locations[new_location.x][new_location.y - 1], direction)
             case LocationType.LEFT_BOX | LocationType.RIGHT_BOX, "<" | ">":
                 self.move_location(self.locations[new_location.x][new_location.y], direction)
-                self.locations[new_location.x][new_location.y] = new_location
-                self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
-            case LocationType.WALL, _:
-                raise Exception("Hit Wall")
+            case LocationType.LEFT_BOX, "^" | "v":
+                self.move_location(self.locations[new_location.x][new_location.y], direction)
+                right_box = self.locations[new_location.x][new_location.y + 1]
+                self.move_location(right_box, direction)
+            case LocationType.RIGHT_BOX, "^" | "v":
+                self.move_location(self.locations[new_location.x][new_location.y], direction)
+                left_box = self.locations[new_location.x][new_location.y - 1]
+                self.move_location(left_box, direction)
+
+        self.locations[new_location.x][new_location.y] = new_location
+        self.locations[old_location.x][old_location.y].type = LocationType.EMPTY
+
         return new_location
 
     def get_new_location(self, location, direction):
