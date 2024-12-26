@@ -21,7 +21,7 @@ for schematic in schematics:
             if column == "#":
                 heights[j] += 1
 
-    bucket.append(heights)
+    bucket.append(tuple(heights))
 
 total = 0
 for lock, key in product(locks, keys):
